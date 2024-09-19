@@ -7,4 +7,5 @@ func main() {
 	fmt.Print("Insira a expressão a ser calculada: ")
 	fmt.Scanln(&s)
 	fmt.Println("Resultado:", calculator(s))
+
 }

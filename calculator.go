@@ -15,8 +15,27 @@ func calculator(str string) int {
 	var outputQueue []int
 	nums := []string{"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"}
 	ops := []string{"+", "-", "*", "/"}
-	currentSize := len(splitted)
 
+	ex := []string{"*", "*"}
+	lastOp := -1
+
+	for i := 0; i < len(splitted); i++ {
+		if slices.Contains(ops, string(splitted[i])) && i+2 < len(splitted) && slices.Equal(splitted[i:(i+2)], ex) == false {
+			lastOp = i
+		}
+		if i+1 < len(splitted) && string(splitted[i]) == "*" && string(splitted[i+1]) == "*" {
+			var a int
+			a, _ = collectNumber(splitted[lastOp+1:], nums)
+			b, _ := collectNumber(splitted[i+2:], nums)
+			r := calculate(a, b, "**")
+			aux := strings.Split(fmt.Sprint(r), "")
+			splitted = slices.Concat(splitted[:lastOp+1], aux, splitted[i+3:])
+			i = i - 1 + len(aux)
+			lastOp = i
+		}
+	}
+
+	currentSize := len(splitted)
 	for i := 0; i < currentSize; i++ {
 		if slices.Contains(nums, string(splitted[i])) {
 			n, add := collectNumber(splitted[i:], nums)
@@ -27,14 +46,8 @@ func calculator(str string) int {
 		if slices.Contains(ops, string(splitted[i])) {
 			if string(splitted[i]) == "/" || string(splitted[i]) == "*" {
 				var a int
-				var op string
+				op := splitted[i]
 				outputQueue, a = popInt(outputQueue)
-				if splitted[i] == "*" && splitted[i+1] == "*" {
-					op = "**"
-					i++
-				} else {
-					op = string(splitted[i])
-				}
 				b, add := collectNumber(splitted[i+1:], nums)
 				r := calculate(a, b, op)
 				outputQueue = append(outputQueue, r)
